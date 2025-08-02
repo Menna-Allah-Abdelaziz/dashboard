@@ -11,13 +11,16 @@ class NoteController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        $notes = Note::latest()->paginate(5);
+  public function index()
+{
+    $notes = Note::where('is_visible', true)
+                 ->latest()
+                 ->paginate(5);
 
-        return view('notes.index', compact('notes'))
-            ->with('i', (request()->input('page', 1) - 1) * 5);
-    }
+    return view('notes.index', compact('notes'))
+           ->with('i', (request()->input('page', 1) - 1) * 5);
+}
+
 
     /**
      * Show the form for creating a new resource.
@@ -75,5 +78,14 @@ class NoteController extends Controller
         return redirect()->route('notes.index')
             ->with('success', 'Note deleted successfully');
     }
+    public function hide($id)
+{
+    $note = Note::findOrFail($id);
+    $note->is_visible = false;
+    $note->save();
+
+    return response()->json(['message' => 'Note hidden successfully']);
+}
+
 }
 

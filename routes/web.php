@@ -14,3 +14,4 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 use App\Http\Controllers\NoteController;
 
 Route::resource('notes', NoteController::class);
+Route::post('/notes/{id}/hide', [NoteController::class, 'hide'])->name('notes.hide');

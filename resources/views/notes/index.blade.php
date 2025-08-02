@@ -5,7 +5,7 @@
 <div class="card mt-5">
     <h2 class="card-header">Laravel CRUD Example</h2>
     <div class="card-body">
-        
+
         @if(session('success'))
             <div class="alert alert-success" role="alert">{{ session('success') }}</div>
         @endif
@@ -19,24 +19,31 @@
                 <tr>
                     <th width="80px">No</th>
                     <th>Title</th>
-                    <th>content</th>
+                    <th>Content</th>
                     <th width="250px">Action</th>
                 </tr>
             </thead>
 
             <tbody>
                 @forelse ($notes as $note)
-                    <tr>
-                        <td>{{ ++$i }}</td>
+                    <tr id="note-{{ $note->id }}">
+                        <td>{{ $loop->iteration + $i }}</td>
                         <td>{{ $note->title }}</td>
                         <td>{{ $note->content }}</td>
                         <td>
-                            <form action="{{ route('notes.destroy',$note->id) }}" method="POST">
-                                <a class="btn btn-info btn-sm" href="{{ route('notes.show',$note->id) }}"><i class="fa-solid fa-list"></i> Show</a>
-                                <a class="btn btn-primary btn-sm" href="{{ route('notes.edit',$note->id) }}"><i class="fa-solid fa-pen-to-square"></i> Edit</a>
+                            <a class="btn btn-info btn-sm" href="{{ route('notes.show',$note->id) }}">
+                                <i class="fa-solid fa-list"></i> Show
+                            </a>
+
+                            <a class="btn btn-primary btn-sm" href="{{ route('notes.edit',$note->id) }}">
+                                <i class="fa-solid fa-pen-to-square"></i> Edit
+                            </a>
+
+                            <form class="d-inline hide-form" data-id="{{ $note->id }}">
                                 @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i> Delete</button>
+                                <button type="submit" class="btn btn-warning btn-sm">
+                                    <i class="fa-solid fa-eye-slash"></i> Hide
+                                </button>
                             </form>
                         </td>
                     </tr>
@@ -47,10 +54,32 @@
                 @endforelse
             </tbody>
         </table>
-        
+
         {!! $notes->links() !!}
 
     </div>
-</div>  
+</div>
+
+<script>
+document.querySelectorAll('.hide-form').forEach(form => {
+    form.addEventListener('submit', function (e) {
+        e.preventDefault(); // منع إرسال الفورم العادي
+        const id = this.dataset.id;
+
+        fetch(`/notes/${id}/hide`, {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                document.getElementById('note-' + id).remove();
+            }
+        });
+    });
+});
+</script>
 
 @endsection
