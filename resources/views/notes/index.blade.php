@@ -13,6 +13,14 @@
         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
             <a class="btn btn-success btn-sm" href="{{ route('notes.create') }}"><i class="fa fa-plus"></i> Create New Note</a>
         </div>
+<form method="GET" action="{{ route('notes.index') }}" class="row g-3 mt-4">
+    <div class="col-md-10">
+        <input type="text" name="search" value="{{ request('search') }}" class="form-control" placeholder="Search notes...">
+    </div>
+    <div class="col-md-2">
+        <button type="submit" class="btn btn-secondary w-100">Search</button>
+    </div>
+</form>
 
         <table class="table table-bordered table-striped mt-4">
             <thead>

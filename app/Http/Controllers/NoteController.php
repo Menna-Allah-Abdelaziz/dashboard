@@ -11,15 +11,22 @@ class NoteController extends Controller
     /**
      * Display a listing of the resource.
      */
-  public function index()
+public function index(Request $request)
 {
+    $search = $request->input('search');
+
     $notes = Note::where('is_visible', true)
+                 ->when($search, function ($query, $search) {
+                     return $query->where('title', 'like', "%{$search}%")
+                                  ->orWhere('content', 'like', "%{$search}%");
+                 })
                  ->latest()
                  ->paginate(5);
 
-    return view('notes.index', compact('notes'))
+    return view('notes.index', compact('notes', 'search'))
            ->with('i', (request()->input('page', 1) - 1) * 5);
 }
+
 
 
     /**
