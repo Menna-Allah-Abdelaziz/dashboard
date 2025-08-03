@@ -13,10 +13,11 @@ Route::get('/hallo', function () {
     return 'hallo';
 });
 
-
 Auth::routes();
 
-
 Route::get('/home', [HomeController::class, 'index'])->name('home');
-Route::resource('notes', NoteController::class);
-Route::post('/notes/{id}/hide', [NoteController::class, 'hide'])->name('notes.hide');
+
+Route::middleware(['auth'])->group(function () {
+    Route::resource('notes', NoteController::class);
+    Route::post('/notes/{id}/hide', [NoteController::class, 'hide'])->name('notes.hide');
+});

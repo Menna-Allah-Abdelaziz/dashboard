@@ -13,4 +13,9 @@ class Note extends Model
         'content',
          'is_visible'
     ];
+    public function user()
+{
+    return $this->belongsTo(User::class);
+}
+
 }

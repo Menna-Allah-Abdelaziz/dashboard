@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Note;
 use Illuminate\Http\Request;
 use App\Http\Requests\NoteUpdateRequest;
+use Illuminate\Support\Facades\Auth;
 
 class NoteController extends Controller
 {
@@ -15,10 +16,13 @@ public function index(Request $request)
 {
     $search = $request->input('search');
 
-    $notes = Note::where('is_visible', true)
+    $notes = Note::where('user_id', auth()->id())
+                 ->where('is_visible', true)
                  ->when($search, function ($query, $search) {
-                     return $query->where('title', 'like', "%{$search}%")
-                                  ->orWhere('content', 'like', "%{$search}%");
+                     return $query->where(function ($q) use ($search) {
+                         $q->where('title', 'like', "%{$search}%")
+                           ->orWhere('content', 'like', "%{$search}%");
+                     });
                  })
                  ->latest()
                  ->paginate(5);
@@ -26,6 +30,7 @@ public function index(Request $request)
     return view('notes.index', compact('notes', 'search'))
            ->with('i', (request()->input('page', 1) - 1) * 5);
 }
+
 
 
 
@@ -42,13 +47,20 @@ public function index(Request $request)
      */
     public function store(NoteUpdateRequest $request)
     {
-        Note::create($request->validated());
+ dd(auth()->id());
+    Note::create([
+        'title' => $request->title,
+        'content' => $request->content,
+        'user_id' => auth()->id(), // هنا الرابط
+        'is_visible' => true
+    ]);
 
-        return redirect()->route('notes.index')
-            ->with('success', 'Note created successfully.');
-    }
 
-    /**
+    return redirect()->route('notes.index')
+        ->with('success', 'Note created successfully.');
+}
+
+  /** 
      * Display the specified resource.
      */
     public function show(Note $note)
