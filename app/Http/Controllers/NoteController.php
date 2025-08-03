@@ -45,9 +45,8 @@ public function index(Request $request)
     /**
      * Store a newly created resource in storage.
      */
-    public function store(NoteUpdateRequest $request)
+    public function store(Request $request)
     {
- dd(auth()->id());
     Note::create([
         'title' => $request->title,
         'content' => $request->content,
